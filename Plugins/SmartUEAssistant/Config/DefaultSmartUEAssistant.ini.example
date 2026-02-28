@@ -1,10 +1,11 @@
 [/Script/SmartUEAssistant.SmartUEAssistantSettings]
 ; AI Assistant Configuration
 ; 支持OpenAI兼容的API服务（OpenAI、DeepSeek等）
-; 请将your-api-key-here替换为您的API密钥
+; 请将 your-api-key-here 替换为您的真实API密钥
+; 复制此文件为 DefaultSmartUEAssistant.ini 并填写您的密钥（该文件已被 .gitignore 忽略，不会提交到版本库）
 APIEndpoint=https://api.openai.com/v1/chat/completions
 BaseURL=https://api.deepseek.com/v1
-APIKey=
+APIKey=your-api-key-here
 SupportedModels=deepseek-chat
 RequestTimeout=100
 MaxTokens=12800

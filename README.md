@@ -29,19 +29,28 @@
 
 ### 配置API密钥
 
-编辑 `Config/DefaultSmartUEAssistant.ini`：
+> **安全提示**: 配置文件 `Plugins/SmartUEAssistant/Config/DefaultSmartUEAssistant.ini` 和 `Config/DefaultSmartUEAssistant.ini` 已加入 `.gitignore`，**不会**被提交到版本库，请勿将含有真实密钥的文件手动添加到 git。
 
-```ini
-[/Script/SmartUEAssistant.SmartUEAssistantSettings]
-APIKey=your-api-key-here
-BaseURL=https://api.openai.com
-ModelName=gpt-4
-```
+1. 复制示例模板：
+
+   ```text
+   Plugins/SmartUEAssistant/Config/DefaultSmartUEAssistant.ini.example
+   → Plugins/SmartUEAssistant/Config/DefaultSmartUEAssistant.ini
+   ```
+
+2. 填写您的 API 密钥：
+
+   ```ini
+   [/Script/SmartUEAssistant.SmartUEAssistantSettings]
+   APIKey=your-api-key-here
+   BaseURL=https://api.deepseek.com/v1
+   SupportedModels=deepseek-chat
+   ```
 
 #### 获取API密钥
 
-- **OpenAI**: https://platform.openai.com/api-keys
-- **DeepSeek**: https://platform.deepseek.com/api_keys
+- **OpenAI**: [platform.openai.com/api-keys](https://platform.openai.com/api-keys)
+- **DeepSeek**: [platform.deepseek.com/api_keys](https://platform.deepseek.com/api_keys)
 
 ### 使用方法
 

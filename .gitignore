@@ -84,3 +84,7 @@ Release/
 
 # Cursor editor files
 .cursor/
+
+# Plugin user config (may contain API keys - use DefaultSmartUEAssistant.ini.example as template)
+Plugins/SmartUEAssistant/Config/DefaultSmartUEAssistant.ini
+Config/DefaultSmartUEAssistant.ini
