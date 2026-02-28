@@ -73,3 +73,14 @@ Plugins/**/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
+DerivedData/*
+Plugins/**/DerivedData/*
+\n# Ignore packaged/build artifacts\nDerivedData/Builds/\nRelease/*/Intermediate/\nRelease/*/Binaries/\n
+
+# Ignore release artifacts
+Release/
+
+.vscode/
+
+# Cursor editor files
+.cursor/
