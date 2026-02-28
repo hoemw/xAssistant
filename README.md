@@ -1,296 +1,384 @@
-# Smart UE Assistant 插件
+# xAssistant - UE智能助手插件
 
-AI驱动的Unreal Engine智能助手插件，支持自然语言控制和代码生成。支持OpenAI和DeepSeek等兼容API。
+> AI驱动的Unreal Engine智能助手，通过自然语言控制编辑器操作
 
-## 目录
+[![版本](https://img.shields.io/badge/版本-1.0.8-blue.svg)](https://github.com/jd-cg/xAssistant)
+[![UE版本](https://img.shields.io/badge/UE-5.0+-orange.svg)](https://www.unrealengine.com)
+[![协议](https://img.shields.io/badge/协议-Apache--2.0-green.svg)](LICENSE)
 
-- [功能特性](#功能特性)
-- [安装配置](#安装配置)
-- [使用方法](#使用方法)
-- [API 服务支持](#api-服务支持)
-- [支持的功能](#支持的功能)
-- [核心架构概览](#核心架构概览)
-- [进一步阅读](#进一步阅读)
-- [关键代码与目录](#关键代码与目录)
-- [版本](#版本)
-- [打包发布（脚本示例）](#打包发布脚本示例)
-- [故障排查](#故障排查)
-- [Roadmap（持续演进）](#roadmap持续演进)
-- [数据流与执行流程（简述）](#数据流与执行流程简述)
-- [扩展指南：新增一个自定义工具（示例）](#扩展指南新增一个自定义工具示例)
-- [新增：上下文记忆与理解（离线本地方案）](#新增-上下文记忆与理解离线本地方案)
-- [Roadmap 更新（离线记忆与检索）](#roadmap-更新离线记忆与检索)
+---
 
-## 功能特性
+## ✨ 功能特性
 
-- 🤖 集成OpenAI兼容模型（OpenAI GPT、DeepSeek等）
-- 💬 自然语言对话界面
-- 🎯 UE编辑器指令执行
-- ⚡ 实时代码生成
-- 🎨 现代化Slate UI
-- 🛡️ 可配置确认策略：仅危险工具需要确认（bAutoExecuteSafeTools）
-- ⏭️ 跳过控制台命令确认（bSkipConfirmForConsoleCommands，1.0.6 新增）
+- 🤖 **AI对话控制** - 自然语言操作UE编辑器
+- 🎯 **智能工具执行** - 30+编辑器工具自动调用
+- ⚡ **属性智能修改** - AI理解语义，精准修改对象属性
+- 🎨 **现代化UI** - Slate界面，流式对话体验
+- 🔐 **安全可控** - 危险操作确认，权限分级管理
+- 🌐 **多模型支持** - OpenAI、DeepSeek等兼容API
 
-## 安装配置
+---
 
-1. 启用插件：在插件管理器中启用 "Smart UE Assistant"
-2. 配置 API 密钥：编辑 `Config/DefaultSmartUEAssistant.ini`
-   - 将 `APIKey=your-api-key-here` 替换为您的 API 密钥
-   - OpenAI 密钥: https://platform.openai.com/api-keys
-   - DeepSeek 密钥: https://platform.deepseek.com/api_keys
-3. 重启 UE 编辑器
+## 📦 快速开始
 
-## 使用方法
+### 安装
 
-1. 菜单：Window → Smart UE Assistant
+1. 将插件复制到项目的 `Plugins/` 目录
+2. 启用插件：编辑器 → 插件管理器 → 搜索 "Smart UE Assistant" → 启用
+3. 重启编辑器
 
-   ![1757857223610](images/README/1757857223610.png)
-2. 输入自然语言指令
+### 配置API密钥
 
-   ![1757857459808](images/README/1757857459808.png)
-3. AI 将生成相应的 UE 代码或操作
+编辑 `Config/DefaultSmartUEAssistant.ini`：
 
-   ![1757857528451](images/README/1757857528451.png)
+```ini
+[/Script/SmartUEAssistant.SmartUEAssistantSettings]
+APIKey=your-api-key-here
+BaseURL=https://api.openai.com
+ModelName=gpt-4
+```
 
-## API 服务支持
+#### 获取API密钥
 
-### OpenAI
+- **OpenAI**: https://platform.openai.com/api-keys
+- **DeepSeek**: https://platform.deepseek.com/api_keys
 
-- 默认配置，使用 `https://api.openai.com`
-- 支持模型：gpt-3.5-turbo, gpt-4
+### 使用方法
 
-### DeepSeek
+1. 打开助手窗口：菜单栏 → **Window** → **Smart UE Assistant**
+2. 在对话框输入自然语言指令，例如：
+   - "把场景中的灯光改成红色"
+   - "选中所有立方体并向上移动10米"
+   - "创建一个点光源，位置在(0,0,100)"
+   - "将选中的物体批量重命名为 Prop_，从1开始编号"
 
-- 设置 `BaseURL=https://api.deepseek.com`
-- 设置 `SupportedModels=deepseek-chat`
-- 完全兼容 OpenAI API 格式
+---
 
-## 支持的功能
+## 🎯 核心功能
 
-- 蓝图节点生成
-- C++ 代码片段
-- 编辑器操作自动化
-- 问题解答和调试帮助
+### 1. 智能属性修改
 
-## 核心架构概览
+AI自动理解语义，无需记忆复杂的属性名：
+
+```
+用户: "把灯光调亮一点"
+AI: ✅ 自动识别 → Intensity 属性 → 调整数值 → 实时显示
+```
+
+**支持的属性类型**
+
+- 灯光：颜色、亮度、半径、温度
+- 变换：位置、旋转、缩放
+- 可见性：显示/隐藏、移动性
+- 自定义：任意UObject属性
+
+### 2. 批量操作工具
+
+
+| 工具                 | 功能       | 示例                     |
+| ---------------------- | ------------ | -------------------------- |
+| batch_rename_actors  | 批量重命名 | "重命名选中物体为 Wall_" |
+| batch_set_visibility | 批量显隐   | "隐藏所有立方体"         |
+| batch_set_mobility   | 批量移动性 | "设置为可移动"           |
+| distribute_actors    | 分布排列   | "按网格排列选中物体"     |
+| align_to_ground      | 对齐地面   | "让物体贴到地面"         |
+
+### 3. 场景分析工具
+
+
+| 工具                    | 功能           |
+| ------------------------- | ---------------- |
+| analyze_level_stats     | 关卡统计信息   |
+| find_missing_references | 查找缺失引用   |
+| find_duplicate_names    | 查找重复命名   |
+| find_oversized_meshes   | 查找超大网格   |
+| validate_level          | 验证关卡完整性 |
+
+### 4. 相机书签
+
+
+| 工具                    | 功能             |
+| ------------------------- | ------------------ |
+| save_camera_bookmark    | 保存当前相机视角 |
+| jump_to_camera_bookmark | 跳转到已保存视角 |
+| list_camera_bookmarks   | 列出所有书签     |
+
+---
+
+## 🏗️ 架构设计
 
 <p align="center">
-  <img src="Plugins/SmartUEAssistant/doc/architecture.svg" alt="Smart UE Assistant 架构图" width="800" />
+  <img src="Plugins/SmartUEAssistant/doc/architecture.svg" alt="架构图" width="800" />
 </p>
 
-插件由“对话窗体 → AI服务 → 场景上下文 → 工具执行”四层组成，解耦清晰、易于扩展：
+### 四层架构
 
-## 进一步阅读
+```
+┌─────────────────────────────────────────┐
+│  UI层 - AIAssistantWindow (Slate)      │
+│  对话界面、消息展示、用户交互           │
+├─────────────────────────────────────────┤
+│  服务层 - AIService                     │
+│  API调用、请求封装、响应解析            │
+├─────────────────────────────────────────┤
+│  上下文层 - SceneContextProvider        │
+│  场景信息、选择集、环境数据采集         │
+├─────────────────────────────────────────┤
+│  工具层 - Tools/*                       │
+│  30+编辑器工具、属性修改、批量操作      │
+└─────────────────────────────────────────┘
+```
 
-- 更详细的模块职责、数据流、优化策略、测试策略等，请参阅：`Plugins/SmartUEAssistant/doc/SmartUEAssistant_FinalPlan.md` 的“技术架构确认/实施准备就绪”章节及“项目路线图”。
-- 架构图资源：`Plugins/SmartUEAssistant/doc/architecture.svg`（文件将继续保留）。
+### 关键模块
+
+- **AIService** - AI模型调用与工具编排
+- **PropertyModificationHelper** - 反射式属性修改
+- **EditorAIToolRegistry** - 工具注册与分发
+- **SceneContextProvider** - 场景上下文采集
 
 ---
 
-- UI 层（对话与交互）
-  - 入口与面板：Plugins/SmartUEAssistant/Source/SmartUEAssistant/Private/AIAssistantWindow.cpp（对应头文件在 Public/）
-  - 样式与图标：…/Private/SmartUEAssistantStyle.cpp 与 …/Public/SmartUEAssistantStyle.h
-- 服务层（模型调用与策略）
-  - AIService：…/Private/AIService.cpp 与 …/Public/AIService.h，封装 OpenAI 兼容 API 调用、请求/响应序列化、执行策略（DryRun/确认）等
-  - 设置项：…/Private/SmartUEAssistantSettings.cpp 与 …/Public/SmartUEAssistantSettings.h，提供 bAutoExecuteSafeTools、bSkipConfirmForConsoleCommands 等开关
-- 上下文层（场景信息与环境）
-  - 场景上下文：…/Private/SceneContextProvider.cpp 与 …/Public/SceneContextProvider.h，聚合 FSceneContext（…/Public/FSceneContext.h）
-- 工具层（能力与动作）
-  - 工具目录：…/Private/Tools/*.cpp 与 …/Public/Tools/*.h，包含 ActorTools、SelectionTools、ViewportTools、LightingTools、SystemTools、QueryTools
-  - 工具注册与类型：…/Public/EditorAIToolRegistry.h、…/Public/EditorAIToolTypes.h
+## 🛠️ 工具列表
 
-## 关键代码与目录
+### Actor操作 (5个)
 
-- 模块入口：Plugins/SmartUEAssistant/Source/SmartUEAssistant/Private/SmartUEAssistant.cpp
-- 构建文件：Plugins/SmartUEAssistant/Source/SmartUEAssistant/SmartUEAssistant.Build.cs
-- 对话窗体：Plugins/SmartUEAssistant/Source/SmartUEAssistant/Private/AIAssistantWindow.cpp
-- AI 服务：Plugins/SmartUEAssistant/Source/SmartUEAssistant/Private/AIService.cpp
-- 设置定义：Plugins/SmartUEAssistant/Source/SmartUEAssistant/Public/SmartUEAssistantSettings.h
-- 场景上下文：Plugins/SmartUEAssistant/Source/SmartUEAssistant/Private/SceneContextProvider.cpp
-- 工具清单：
-  - ActorTools：…/Private/Tools/ActorTools.cpp（放置/移动/删除等Actor相关）
-  - SelectionTools：…/Private/Tools/SelectionTools.cpp（选择相关）
-  - ViewportTools：…/Private/Tools/ViewportTools.cpp（视口与相机）
-  - LightingTools：…/Private/Tools/LightingTools.cpp（灯光与环境）
-  - SystemTools：…/Private/Tools/SystemTools.cpp（控制台命令等系统操作）
-  - QueryTools：…/Private/Tools/QueryTools.cpp（查询/统计）
+- select_focus_actor - 选择并聚焦
+- set_actor_transform - 设置变换
+- create_actor_basic - 创建Actor
+- delete_actor - 删除Actor
+- transform_actors_delta - 相对变换
 
-## 版本
+### 批量操作 (7个)
 
-- 当前版本：1.0.8（插件元数据：Version=10008, VersionName=1.0.8，见 Plugins/SmartUEAssistant/SmartUEAssistant.uplugin）
-- 变更对比：v1.0.7…v1.0.8 — https://github.com/xlostpanda/MySmartUEAssistant/compare/v1.0.7...v1.0.8
-- Release：v1.0.8 — https://github.com/xlostpanda/MySmartUEAssistant/releases/tag/v1.0.8
+- batch_rename_actors - 批量重命名
+- batch_set_visibility - 批量可见性
+- batch_set_mobility - 批量移动性
+- batch_move_to_level - 移动到关卡
+- batch_set_tags - 批量标签
+- align_to_ground - 对齐地面
+- distribute_actors - 分布排列
 
-## 打包发布（脚本示例）
+### 场景分析 (5个)
 
-使用根目录下的 PowerShell 脚本一键打包插件，默认产物位于 dist/。
+- analyze_level_stats - 关卡统计
+- find_missing_references - 查找缺失引用
+- find_duplicate_names - 查找重复名称
+- find_oversized_meshes - 查找超大网格
+- validate_level - 验证关卡
 
-- 脚本位置：Scripts/PackSmartUEAssistantPlugin.ps1
-- 产物命名：dist/SmartUEAssistant_<version>.zip（ZIP 根目录即 SmartUEAssistant/）
+### 相机书签 (4个)
 
-示例：
+- save_camera_bookmark - 保存书签
+- jump_to_camera_bookmark - 跳转书签
+- list_camera_bookmarks - 列出书签
+- delete_camera_bookmark - 删除书签
 
-1) 默认版本（从 .uplugin 自动读取），输出到 dist
+### 其他工具 (9个)
+
+- 选择工具：select_actors_by_rule
+- 查询工具：list_actors, get_actor_properties, list_selection_presets
+- 视口工具：focus_viewport
+- 系统工具：run_console_command, save_level, pie_control
+- 灯光工具：set_light_property
+
+**完整工具文档**: 30个工具，涵盖编辑器主要操作场景
+
+---
+
+## ⚙️ 配置选项
+
+### 基础配置
+
+```ini
+[/Script/SmartUEAssistant.SmartUEAssistantSettings]
+# API配置
+APIKey=your-api-key-here
+BaseURL=https://api.openai.com
+ModelName=gpt-4
+SupportedModels=gpt-3.5-turbo,gpt-4
+
+# 执行策略
+bAutoExecuteSafeTools=true              # 安全工具自动执行
+bSkipConfirmForConsoleCommands=false    # 控制台命令跳过确认
+```
+
+### DeepSeek配置
+
+```ini
+BaseURL=https://api.deepseek.com
+ModelName=deepseek-chat
+SupportedModels=deepseek-chat
+```
+
+---
+
+## 📝 版本历史
+
+### v1.0.8 (2026-02-28) - 最新版本
+
+- ✅ AI输出文本可选择和复制
+- ✅ 流式显示支持文本选择
+- ✅ 优化UI控件和用户体验
+
+### v1.0.6 (2025-10-09)
+
+- ✅ AI语义理解系统
+- ✅ 通用属性修改工具 (modify)
+- ✅ 属性修改辅助类
+- ✅ 完整事务支持 (Undo/Redo)
+
+### v1.0.0 (2025-09-10)
+
+- ✅ 初始版本发布
+- ✅ OpenAI/DeepSeek支持
+- ✅ 30+编辑器工具
+- ✅ Slate对话界面
+
+---
+
+## 🚀 打包发布
+
+使用PowerShell脚本一键打包：
 
 ```powershell
-# 在仓库根目录执行
+# 默认版本，输出到 dist/
 ./Scripts/PackSmartUEAssistantPlugin.ps1
+
+# 指定版本和输出目录
+./Scripts/PackSmartUEAssistantPlugin.ps1 -Version 1.0.8 -OutputRoot release
 ```
-
-2) 指定版本与输出目录
-
-```powershell
-./Scripts/PackSmartUEAssistantPlugin.ps1 -Version 1.0.7 -OutputRoot out
-```
-
-3) 输出详细日志
-
-```powershell
-./Scripts/PackSmartUEAssistantPlugin.ps1 -VerboseLog
-```
-
-版本默认化说明：
-
-- 未显式传入 -Version 时，脚本会按顺序尝试：
-  1) 读取 Plugins/SmartUEAssistant/SmartUEAssistant.uplugin 的 VersionName
-  2) 若无则读取 Version
-  3) 均无则回退到时间戳（yyyyMMdd-HHmm）
-- 版本字符串会被清洗以适配文件名：使用正则 [^0-9A-Za-z._-] 替换为下划线 "_"。
-
-关键行为要点：
-
-- 使用 robocopy 复制插件目录，排除 .git、Intermediate、Saved、.vs，以及 *.obj、*.pdb、*.ipdb、*.iobj、*.tmp 等临时产物。
-- 强制校验 staging 中存在 Config 目录，缺失将中止并报错。
-- 使用 System.IO.Compression.ZipFile 生成压缩包，ZIP 根包含 SmartUEAssistant/。
-
-1. API 密钥未生效：确认已在 `Config/DefaultSmartUEAssistant.ini` 写入并重启编辑器。
-2. 无法访问服务：检查网络代理、BaseURL 与模型名称。
-3. 执行策略不符合预期：检查上述两个设置项是否按需开启/关闭。
 
 ---
 
-*支持 OpenAI 兼容 API 服务：OpenAI、DeepSeek 等*
+## 🔧 开发扩展
 
-## Roadmap（持续演进）
+### 添加自定义工具
 
-- 工具体系
-  - [ ]  更多编辑器内置工具能力（资产批处理、关卡切换、材质替换）
-  - [ ]  工具能力权限分级与安全沙箱
-- 模型与推理
-  - [ ]  增加多模型路由与降级策略（离线/网络异常回退）
-  - [ ]  支持流式响应与中断控制
-- 交互与体验
-  - [ ]  对话持久化与多会话管理
-  - [ ]  提示词模板与上下文拼装可视化
-- 开放与扩展
-  - [ ]  自定义工具模板脚手架命令（生成 .h/.cpp）
-  - [ ]  工具市场/插件化加载
+1. **定义工具接口** (`Public/Tools/MyTools.h`)
 
-欢迎通过 Issues/PR 反馈与共建。
+```cpp
+class FMyTools {
+public:
+    static FAIToolResult MyCustomTool(const TSharedPtr<FJsonObject>& Args);
+};
+```
 
-## 数据流与执行流程（简述）
+2. **实现工具逻辑** (`Private/Tools/MyTools.cpp`)
 
-1) 用户输入指令（UI 层 AIAssistantWindow）
-   - 采集上下文（当前关卡、选择集、项目设置）并转为 FSceneContext
-2) 生成与发送请求（服务层 AIService）
-   - 组织 Prompt + 工具清单（EditorAIToolRegistry）+ 执行策略（DryRun/确认/跳过控制台确认）
-   - 调用 OpenAI 兼容 API，流式/非流式接收模型回复
-3) 解析模型回复（AIService）
-   - 将回复映射为“工具调用计划”（ToolName + 参数）或“自然语言建议”
-4) 执行与回传（工具层 + UI）
-   - 当需确认：返回预览与风险提示；用户点击确认后执行
-   - 当可直接执行：工具模块（如 ActorTools/SelectionTools 等）完成具体操作
-   - UI 展示结果/日志，必要时给出回滚/二次确认
+```cpp
+FAIToolResult FMyTools::MyCustomTool(const TSharedPtr<FJsonObject>& Args) {
+    // 工具实现
+    return FAIToolResult{true, TEXT("执行成功")};
+}
+```
 
-## 扩展指南：新增一个自定义工具（示例）
+3. **注册到工具清单** (`EditorAIToolRegistry`)
 
-目标：添加一个“批量重命名选中Actor”的工具
-
-- 1. 定义工具接口（Public/Tools/MyRenameTools.h）
-
-  ```cpp
-  // 伪代码，仅示意
-  struct FMyRenameParams { FString Prefix; int32 StartIndex = 1; };
-  class FMyRenameTools {
-  public:
-    static bool BatchRenameSelected(const FMyRenameParams& Params, FString& OutLog);
-  };
-  ```
-- 2. 实现工具逻辑（Private/Tools/MyRenameTools.cpp）
-
-  ```cpp
-  // 伪代码：遍历当前选择集并重命名
-  bool FMyRenameTools::BatchRenameSelected(const FMyRenameParams& Params, FString& OutLog) {
-    // 获取选择集 → 拼接新名称 → 设置名称 → 汇总日志
-    return true;
-  }
-  ```
-- 3. 注册到工具清单（Public/EditorAIToolRegistry.h）
-
-  - 声明一个 ToolId（如 "BatchRenameSelected"）与参数规范
-  - 指定安全级别：是否需要确认（危险/只读/系统）
-- 4. 在 AIService 的提示词/工具说明中加入该工具
-
-  - 确保模型能“看见”新工具与参数格式
-- 5. 验证
-
-  - 关闭确认：应直接执行；
-  - 开启确认：应先返回预览，确认后执行；
-  - 控制台类命令不受此工具影响（与 bSkipConfirmForConsoleCommands 无关）
+```cpp
+Registry.RegisterTool(TEXT("my_custom_tool"), &FMyTools::MyCustomTool);
+```
 
 ---
 
-## 新增：上下文记忆与理解（离线本地方案）
+## 📚 目录结构
 
-目标：在完全离线、中文优先（兼顾英文）的前提下，提供“分层记忆→检索→规划→执行→反思”的稳健能力，提升正确率、长期一致性与可解释性。
-
-### 分层记忆模型
-
-- 短期/工作记忆：最近K轮对话与活跃对象缓存（内存+环形缓存，必要时落盘）。
-- 情景记忆：会话/任务级的约定、决策、错误-修复、关键链接（SQLite+FTS5全文索引）。
-- 长期语义记忆：稳定事实与文档切片（本地向量索引：FAISS 或 Chroma）。
-
-### 本地存储与索引
-
-- 元数据与全文：SQLite（含FTS5）。
-- 向量检索：优先FAISS-CPU（纯离线），可选Chroma；均在本地文件中运行。
-- 嵌入模型：bge-small-zh-v1.5（中文优先，兼顾英文）或复用现有Embedding能力。
-
-### 检索与规划流水线
-
-- 多路召回：STM/情景/长期记忆混合检索（BM25/FTS+向量），证据Top-K合并。
-- 重排与压缩：语义分数+时间衰减+重要度融合；摘要压缩以适配上下文。
-- 代理策略：
-  - ReAct：推理-行动交替，适合工具执行与检索问答。
-  - Tree of Thoughts：复杂任务进行多路径探索与自评，控制搜索预算。
-  - Reflexion：基于语言反馈的自我反思，写回“反思记忆”。
-- 证据溯源：默认要求回答附带证据或给出“依据不足”的提示。
-
-参考：RAG 模型将检索作为非参数记忆与生成结合，并在知识密集任务上优于仅参数模型。<mcreference link="https://arxiv.org/abs/2005.11401" index="1">1</mcreference> <mcreference link="https://arxiv.org/abs/2005.11401v4" index="3">3</mcreference>
-
-### 安全与隐私
-
-- 记忆分区（私有/会话/团队），严格权限标签；工具危险级与二次确认；一键清除与导出。
-
-### 第一阶段（UE 快捷工具范围）
-
-- 仅覆盖“最常用核心”编辑器操作（对现有工具的包装与统一入口）：
-  - 选择与批量操作（SelectionTools）
-  - 视口/相机（ViewportTools）
-  - Actor常见操作（ActorTools：放置/移动/重命名/删除）
-  - 控制台命令快捷调用（SystemTools，遵守 bSkipConfirmForConsoleCommands）
-  - 场景查询（QueryTools）
-- 提供“命令面板”入口（面板内统一搜索与执行），暂不引入托盘/侧边栏/片段库等非核心能力。
+```
+xAssistant/
+├── Config/
+│   └── DefaultSmartUEAssistant.ini    # 插件配置
+├── Content/                            # 内容资产
+├── Plugins/
+│   └── SmartUEAssistant/              # 插件主体
+│       ├── Source/                     # 源代码
+│       │   └── SmartUEAssistant/
+│       │       ├── Private/           # 实现文件
+│       │       │   ├── Tools/         # 工具实现
+│       │       │   ├── AIService.cpp
+│       │       │   └── ...
+│       │       └── Public/            # 头文件
+│       │           ├── Tools/         # 工具接口
+│       │           ├── AIService.h
+│       │           └── ...
+│       ├── Config/                    # 插件配置
+│       └── doc/
+│           └── architecture.svg       # 架构图
+├── Scripts/
+│   └── PackSmartUEAssistantPlugin.ps1 # 打包脚本
+├── CONTRIBUTING.md                     # 贡献指南
+└── README.md                          # 本文档
+```
 
 ---
 
-## Roadmap 更新（离线记忆与检索）
+## 🐛 故障排查
 
-- [ ]  本地记忆存储适配层（SQLite+FTS5，FAISS/Chroma 二选一）
-- [ ]  多路检索与重排（BM25/FTS+向量混检）
-- [ ]  代理策略与可配置搜索预算（ReAct/ToT/Reflexion）
-- [ ]  证据化回答与可审计日志
-- [ ]  UE 最常用快捷工具命令面板（统一入口）
-- [ ]  多会话与记忆清理/导出
+### API调用失败
 
-注：后续按Git规范走 `docs` 类提交，分支：`roadmap-上下文方案`。
+- 检查网络连接和代理设置
+- 确认API密钥正确且有效
+- 查看日志：`LogSmartUEAssistant`
+
+### 工具执行失败
+
+- 检查对话窗口的错误提示
+- 查看编辑器输出日志
+- 确认操作权限和确认设置
+
+### 属性修改不生效
+
+- 使用 `get_available_properties` 查看可用属性
+- 确认属性名大小写正确
+- 检查值类型是否匹配
+
+---
+
+## 🗺️ Roadmap
+
+### 短期目标
+
+- [ ] 更多编辑器工具（资产批处理、材质替换）
+- [ ] 流式响应优化
+- [ ] 对话历史持久化
+
+### 中期目标
+
+- [ ] 多模型路由与降级策略
+- [ ] 工具能力权限沙箱
+- [ ] 自定义工具模板生成
+
+### 长期目标
+
+- [ ] 上下文记忆与检索（离线方案）
+- [ ] 工具市场与插件化加载
+- [ ] 团队协作与多会话管理
+
+---
+
+## 📄 许可证
+
+Apache License 2.0 - 详见 [LICENSE](LICENSE) 文件
+
+---
+
+## 🤝 贡献
+
+欢迎提交Issue和Pull Request！
+
+- 📖 [贡献指南](CONTRIBUTING.md)
+- 🐛 [问题反馈](https://github.com/jd-cg/xAssistant/issues)
+- 💬 讨论与建议
+
+---
+
+## 🔗 相关链接
+
+- **项目仓库**: https://github.com/jd-cg/xAssistant
+- **架构图**: [Plugins/SmartUEAssistant/doc/architecture.svg](Plugins/SmartUEAssistant/doc/architecture.svg)
+- **打包脚本**: [Scripts/PackSmartUEAssistantPlugin.ps1](Scripts/PackSmartUEAssistantPlugin.ps1)
+
+---
+
+<p align="center">
+  <strong>AI驱动，智能高效 | 让UE编辑器操作更简单</strong><br>
+  使用自然语言，专注创作本身
+</p>
